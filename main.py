@@ -13,8 +13,8 @@ def setDB():
     })
 def getDB():
     db = firestore.Client()
-    docs = db.collection("test").get()
-    data = docs.to_dict()
+    docs = db.collection("test").get() #データベース読み込み
+    data = docs[0].to_dict() #1番上のデータを辞書型に変換
     return data
 
 from flask import Flask
