@@ -14,7 +14,8 @@ def setDB():
 def getDB():
     db = firestore.Client()
     docs = db.collection("test").get()
-    return docs
+    data = docs.to_dict()
+    return data
 
 from flask import Flask
 
@@ -22,9 +23,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    docs = getDB() #データベース読み込み
-
-    return docs
+    data = getDB() #データベース読み込み
+    return data
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)
