@@ -53,8 +53,11 @@ app = Flask(__name__)
 
 @app.route("/")
 async def hello_world():
-    gmo_get_price()
-    data = getDB() #データベース読み込み
+    try:
+        gmo_get_price()
+        data = getDB() #データベース読み込み
+    except Exception as e:
+        print(e)
     return data
 
 if __name__ == "__main__":
