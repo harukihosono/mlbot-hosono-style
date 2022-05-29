@@ -18,15 +18,15 @@ from google.cloud import firestore
 def setDB(price):
     db = firestore.Client()
 
-    doc_ref = db.collection("test").document()
+    doc_ref = db.collection("price").document()
     doc_ref.set({
     'created': firestore.SERVER_TIMESTAMP,
     'price': price
     })
 def getDB():
     db = firestore.Client()
-    docs = db.collection("test").get() #データベース読み込み
-    data = docs[0].to_dict() #データを辞書型に変換
+    docs = db.collection("price").get() #データベース読み込み
+    data = docs[-1].to_dict() #最新データを辞書型に変換
     return data
 #---------------------------------------------------
 # Webアプリ化
