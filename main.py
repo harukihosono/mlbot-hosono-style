@@ -1,46 +1,43 @@
-#---------------------------------------------------
-# 1分間起動させる
-#---------------------------------------------------
 import time
-def for_1_minute():
-    for i in range(20):
-        symbol="BTC" #symbolを指定
-        price = get_gmo_price(symbol) #GMOに価格を取得
-        setDB(price) #priceをデータベースに書き込む
-        time.sleep(3)
-    data = getDB() #データベースの最新データを読み込み
-    return data
-
-#---------------------------------------------------
-# GMOから価格を取得
-#---------------------------------------------------
 import requests
-def get_gmo_price(symbol):
-    endPoint = 'https://api.coin.z.com/public'
-    path     = '/v1/ticker?symbol='+symbol
-
-    response = requests.get(endPoint + path)
-    data = response.json()
-    price = data["data"][0]
-    return price
-
-#---------------------------------------------------
-# DB
-#---------------------------------------------------
 from google.cloud import firestore
-def setDB(price):
-    db = firestore.Client()
-
-    doc_ref = db.collection("price").document()
-    doc_ref.set({
-    'created': firestore.SERVER_TIMESTAMP,
-    'price': price
-    })
-def getDB():
-    db = firestore.Client()
-    docs = db.collection("price").get() #データベース読み込み
-    data = docs[0].to_dict() #最新データを辞書型に変換
-    return data
+class Get_price:
+    #---------------------------------------------------
+    # 1分間起動させる
+    #---------------------------------------------------
+    def for_1_minute(self):
+        for i in range(20):
+            symbol="BTC" #symbolを指定
+            price = self.get_gmo_price(symbol) #GMOに価格を取得
+            self.setDB(price) #priceをデータベースに書き込む
+            time.sleep(3)
+        data = self.getDB() #データベースの最新データを読み込み
+        return data
+    #---------------------------------------------------
+    # GMOから価格を取得
+    #---------------------------------------------------
+    def get_gmo_price(self,symbol):
+        endPoint = 'https://api.coin.z.com/public'
+        path     = '/v1/ticker?symbol='+symbol
+        response = requests.get(endPoint + path)
+        data = response.json()
+        price = data["data"][0]
+        return price
+    #---------------------------------------------------
+    # DB
+    #---------------------------------------------------
+    def setDB(self,price):
+        db = firestore.Client()
+        doc_ref = db.collection("price").document()
+        doc_ref.set({
+        'created': firestore.SERVER_TIMESTAMP,
+        'price': price
+        })
+    def getDB(self):
+        db = firestore.Client()
+        docs = db.collection("price").get() #データベース読み込み
+        data = docs[0].to_dict() #最新データを辞書型に変換
+        return data
 #---------------------------------------------------
 # Webアプリ化
 #---------------------------------------------------
@@ -50,7 +47,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    data = for_1_minute()
+    get_price=Get_price()
+    data = get_price.for_1_minute()
+    return data
+
+@app.route("/trade")
+def trade():
+    data = "trade"
     return data
 
 if __name__ == "__main__":
