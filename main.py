@@ -1,4 +1,16 @@
 #---------------------------------------------------
+# 1分間起動させる
+#---------------------------------------------------
+import time
+def for_1_minute():
+    for i in range(20):
+        db = firestore.Client()
+        docs = db.collection("price").get() #データベース読み込み
+        data = docs[0].to_dict() #最新データを辞書型に変換
+        time.sleep(3)
+    return data
+
+#---------------------------------------------------
 # GMOから価格を取得
 #---------------------------------------------------
 import requests
@@ -37,10 +49,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    symbol="BTC" #symbolを指定
-    price = get_gmo_price(symbol) #GMOに価格を取得
-    setDB(price) #priceをデータベースに書き込む
-    data = getDB() #データベースの最新データを読み込み
+    data = for_1_minute()
     return data
 
 if __name__ == "__main__":
