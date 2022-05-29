@@ -26,7 +26,7 @@ def setDB(price):
 def getDB():
     db = firestore.Client()
     docs = db.collection("price").get() #データベース読み込み
-    data = docs[-1].to_dict() #最新データを辞書型に変換
+    data = docs[0].to_dict() #最新データを辞書型に変換
     return data
 #---------------------------------------------------
 # Webアプリ化
