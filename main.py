@@ -4,10 +4,11 @@
 import time
 def for_1_minute():
     for i in range(20):
-        db = firestore.Client()
-        docs = db.collection("price").get() #データベース読み込み
-        data = docs[0].to_dict() #最新データを辞書型に変換
+        symbol="BTC" #symbolを指定
+        price = get_gmo_price(symbol) #GMOに価格を取得
+        setDB(price) #priceをデータベースに書き込む
         time.sleep(3)
+    data = getDB() #データベースの最新データを読み込み
     return data
 
 #---------------------------------------------------
