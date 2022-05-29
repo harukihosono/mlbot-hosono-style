@@ -1,9 +1,11 @@
+import asyncio
+
 #---------------------------------------------------
 # GMOコイン価格取得
 #---------------------------------------------------
 import json
 import websocket
-def gmo_get_price():
+async def gmo_get_price():
     websocket.enableTrace(True)
     ws = websocket.WebSocketApp('wss://api.coin.z.com/ws/public/v1')
 
@@ -54,7 +56,9 @@ app = Flask(__name__)
 @app.route("/")
 async def hello_world():
     try:
-        gmo_get_price()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.ensure_future(gmo_get_price()))
+        loop.close()
         data = getDB() #データベース読み込み
     except Exception as e:
         print(e)
