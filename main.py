@@ -3,12 +3,13 @@ from google.cloud import firestore
 # DB
 #---------------------------------------------------
 
-def setDB():
+def setDB(price):
     db = firestore.Client()
+
     doc_ref = db.collection("test").document()
     doc_ref.set({
     'created': firestore.SERVER_TIMESTAMP,
-    'name': 'Test'
+    'price': price
     })
 def getDB():
     db = firestore.Client()
