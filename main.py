@@ -38,6 +38,27 @@ class Get_price:
         docs = db.collection("price").get() #データベース読み込み
         data = docs[0].to_dict() #最新データを辞書型に変換
         return data
+class Create_Candle:
+    #---------------------------------------------------
+    # DB
+    #---------------------------------------------------
+    def setDB(self,price):
+        db = firestore.Client()
+        doc_ref = db.collection("price").document()
+        doc_ref.set({
+        'created': firestore.SERVER_TIMESTAMP,
+        'price': price
+        })
+    def getDB(self):
+        db = firestore.Client()
+        docs = db.collection("price").get() #データベース読み込み
+        data = docs[0].to_dict() #最新データを辞書型に変換
+        return data
+    def deleteDB(self):
+        db = firestore.Client()
+        docs = db.collection("price").get() #データベース読み込み
+        for doc in docs:
+            db.collection("price").document(doc.id).delete()
 #---------------------------------------------------
 # Webアプリ化
 #---------------------------------------------------
@@ -53,8 +74,9 @@ def hello_world():
 
 @app.route("/trade")
 def trade():
-    data = "trade"
-    return data
+    create_Candle=Create_Candle()
+    create_Candle.deleteDB()
+    return "データベース削除"
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)
