@@ -1,28 +1,59 @@
-from google.cloud import firestore
 #---------------------------------------------------
-# DB
+# GMOコイン価格取得
 #---------------------------------------------------
+import json
+import websocket
+def gmo_get_price():
+    websocket.enableTrace(True)
+    ws = websocket.WebSocketApp('wss://api.coin.z.com/ws/public/v1')
 
-def setDB():
+    def on_open(self):
+        message = {
+            "command": "subscribe",
+            "channel": "ticker",
+            "symbol": "BTC"
+        }
+        ws.send(json.dumps(message))
+
+    def on_message(self, message):
+        setDB(message)
+
+    ws.on_open = on_open
+    ws.on_message = on_message
+
+    ws.run_forever()
+
+#---------------------------------------------------
+# データベース書き込み読み込み
+#---------------------------------------------------
+from google.cloud import firestore
+
+
+def setDB(message):
     db = firestore.Client()
 
-    doc_ref = db.collection("test").document()
-    doc_ref.set({
-    'created': firestore.SERVER_TIMESTAMP,
-    'name': 'Test'
-    })
+    doc_ref = db.collection("price").document()
+    doc_ref.set(message)
 def getDB():
     db = firestore.Client()
-    docs = db.collection("test").get() #データベース読み込み
+    docs = db.collection("price").get() #データベース読み込み
     data = docs[0].to_dict() #1番上のデータを辞書型に変換
     return data
+
+#---------------------------------------------------
+# Webアプリ化
+#---------------------------------------------------
+
 
 from flask import Flask
 
 app = Flask(__name__)
 
+
+
 @app.route("/")
-def hello_world():
+async def hello_world():
+    gmo_get_price()
     data = getDB() #データベース読み込み
     return data
 
