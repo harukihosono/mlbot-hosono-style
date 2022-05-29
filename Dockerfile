@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 ENV PYTHONUNBUFFERED True
 ENV APP_HOME /app
 WORKDIR $APP_HOME
@@ -7,4 +7,4 @@ RUN pip install fastapi
 RUN pip install uvicorn[standard]
 RUN pip install google-cloud-firestore
 RUN pip install websocket
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  --threads 8 main:app
