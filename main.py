@@ -42,27 +42,36 @@ def getDB():
     data = docs[0].to_dict() #1番上のデータを辞書型に変換
     return data
 
-#---------------------------------------------------
-# Webアプリ化
-#---------------------------------------------------
+# #---------------------------------------------------
+# # Webアプリ化
+# #---------------------------------------------------
+import responder
+
+api = responder.API()
+
+@api.route("/hello/{who}")
+def hello_to(req, resp, *, who):
+    resp.text = f"hello, {who}!"
+
+if __name__ == '__main__':
+    api.run()
+
+# from flask import Flask
+
+# app = Flask(__name__)
 
 
-from flask import Flask
 
-app = Flask(__name__)
+# @app.route("/")
+# async def hello_world():
+#     try:
+#         loop = asyncio.get_event_loop()
+#         loop.run_until_complete(asyncio.ensure_future(gmo_get_price()))
+#         loop.close()
+#         data = getDB() #データベース読み込み
+#     except Exception as e:
+#         print(e)
+#     return data
 
-
-
-@app.route("/")
-async def hello_world():
-    try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(asyncio.ensure_future(gmo_get_price()))
-        loop.close()
-        data = getDB() #データベース読み込み
-    except Exception as e:
-        print(e)
-    return data
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=8080)
