@@ -112,6 +112,7 @@ manager = ConnectionManager()
 
 @app.get("/")
 async def get():
+    await gmo_get_price()
     return HTMLResponse(html)
 
 
