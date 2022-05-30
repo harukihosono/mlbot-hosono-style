@@ -12,6 +12,7 @@ class Get_price:
             self.setDB(price) #priceをデータベースに書き込む
             time.sleep(3)
         data = self.getDB() #データベースの最新データを読み込み
+        print(data)
         return data
     #---------------------------------------------------
     # GMOから価格を取得
@@ -35,25 +36,13 @@ class Get_price:
         })
     def getDB(self):
         db = firestore.Client()
-        docs = db.collection("price").get() #データベース読み込み
+        docs = db.collection("price").where("created", ">=", time.time()-60*1000).get() #データベース読み込み
         data = docs[0].to_dict() #最新データを辞書型に変換
         return data
 class Create_Candle:
     #---------------------------------------------------
     # DB
     #---------------------------------------------------
-    def setDB(self,price):
-        db = firestore.Client()
-        doc_ref = db.collection("price").document()
-        doc_ref.set({
-        'created': firestore.SERVER_TIMESTAMP,
-        'price': price
-        })
-    def getDB(self):
-        db = firestore.Client()
-        docs = db.collection("price").get() #データベース読み込み
-        data = docs[0].to_dict() #最新データを辞書型に変換
-        return data
     def deleteDB(self):
         db = firestore.Client()
         docs = db.collection("price").get() #データベース読み込み
