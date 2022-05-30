@@ -1,6 +1,7 @@
 import time
 import requests
 from google.cloud import firestore
+import datetime
 class Get_price:
     #---------------------------------------------------
     # 1分間起動させる
@@ -36,7 +37,8 @@ class Get_price:
         })
     def getDB(self):
         db = firestore.Client()
-        docs = db.collection("price").where("created", ">=", time.time()-60*1000).get() #データベース読み込み
+        jikan = datetime.fromtimestamp(time.time()-60*1000) 
+        docs = db.collection("price").where("created", ">=", jikan).get() #データベース読み込み
         data = docs[0].to_dict() #最新データを辞書型に変換
         return data
 class Create_Candle:
