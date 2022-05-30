@@ -1,20 +1,21 @@
 import time
 import requests
 from google.cloud import firestore
-import datetime
+
 class Get_price:
     #---------------------------------------------------
     # 1分間起動させる
     #---------------------------------------------------
+    
     def for_1_minute(self):
+        prices=[]
         for i in range(20):
             symbol="BTC" #symbolを指定
             price = self.get_gmo_price(symbol) #GMOに価格を取得
-            self.setDB(price) #priceをデータベースに書き込む
+            prices.append(price)
             time.sleep(3)
-        data = self.getDB() #データベースの最新データを読み込み
-        print(data)
-        return data
+        self.setDB(prices) #priceをデータベースに書き込む
+        return "価格取得とDB書き込み完了"
     #---------------------------------------------------
     # GMOから価格を取得
     #---------------------------------------------------
@@ -28,17 +29,16 @@ class Get_price:
     #---------------------------------------------------
     # DB
     #---------------------------------------------------
-    def setDB(self,price):
+    def setDB(self,prices):
         db = firestore.Client()
         doc_ref = db.collection("price").document()
         doc_ref.set({
         'created': firestore.SERVER_TIMESTAMP,
-        'price': price
+        'price': prices
         })
     def getDB(self):
         db = firestore.Client()
-        jikan = datetime.fromtimestamp(time.time()-60*1000) 
-        docs = db.collection("price").where("created", ">=", jikan).get() #データベース読み込み
+        docs = db.collection("price").stream() #データベース読み込み
         data = docs[0].to_dict() #最新データを辞書型に変換
         return data
 class Create_Candle:
@@ -47,7 +47,7 @@ class Create_Candle:
     #---------------------------------------------------
     def deleteDB(self):
         db = firestore.Client()
-        docs = db.collection("price").get() #データベース読み込み
+        docs = db.collection("price").stream() #データベース読み込み
         for doc in docs:
             db.collection("price").document(doc.id).delete()
 #---------------------------------------------------
